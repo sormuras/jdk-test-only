@@ -29,10 +29,15 @@ on:
         default: 'master'
         required: true
         type: string
-
+      jtreg-args:
+        description: 'Arguments to be passed to JTReg - https://openjdk.org/jtreg/command-help.html'
+        default: 'test/jdk/java/lang/HashCode.java'
+        required: true
+        type: string
+        
 jobs:
   test:
-    name: "Setup JDK from URI on ${{ github.event.inputs.os }}"
+    name: "Run JDK tests on ${{ github.event.inputs.os }}"
     runs-on: ${{ github.event.inputs.os }}
     steps:
       - name: 'Set up JDK'
@@ -46,7 +51,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ github.event.inputs.test-repository }}
-          ref:  ${{ github.event.inputs.test-reference }}
+          ref: ${{ github.event.inputs.test-reference }}
       - name: 'List entries of test/ directory'
         shell: bash
         run: ls -l test
@@ -54,7 +59,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: openjdk/jtreg
-          ref:  ${{ github.event.inputs.jtreg-reference }}
+          ref: ${{ github.event.inputs.jtreg-reference }}
           path: build/jtreg
       - name: 'Build JTReg'
         shell: bash
@@ -63,3 +68,6 @@ jobs:
       - name: 'Print JTReg version'
         shell: bash
         run: java -jar build/jtreg/build/images/jtreg/lib/jtreg.jar -version
+      - name: 'Run JTReg...'
+        shell: bash
+        run: java -jar build/jtreg/build/images/jtreg/lib/jtreg.jar ${{ github.event.inputs.jtreg-args }}
