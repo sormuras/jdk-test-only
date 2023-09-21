@@ -11,14 +11,19 @@ on:
           - 'macos-latest'
           - 'windows-latest'
       uri:
-        description: 'URI of JDK archive file to download'
+        description: 'URI of JDK archive file to test'
         required: true
         type: string
-      install:
-        description: 'Run actions/setup-java to install the downloaded JDK'
-        default: 'true'
+      test-repository:
+        description: 'Check out sources of this JDK repository'
+        default: 'openjdk/jdk'
         required: true
-        type: boolean
+        type: string
+      test-reference:
+        description: 'The branch, tag or SHA to check out'
+        default: 'master'
+        required: true
+        type: string
 
 jobs:
   test:
@@ -30,6 +35,13 @@ jobs:
         uses: oracle-actions/setup-java@v1
         with:
           uri: ${{ github.event.inputs.uri }}
-          install: ${{ github.event.inputs.install }}
       - name: 'Print Java version'
         run: java -version
+      - name: 'Check out test repository'
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.test-repository }}
+          ref:  ${{ github.event.inputs.test-reference }}
+      - name: 'List entries of test/ directory'
+        shell: bash
+        run: ls -l test/
