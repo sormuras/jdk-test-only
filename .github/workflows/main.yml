@@ -20,7 +20,12 @@ on:
         required: true
         type: string
       test-reference:
-        description: 'The branch, tag or SHA to check out'
+        description: 'JDK branch, tag or SHA to check out'
+        default: 'master'
+        required: true
+        type: string
+      jtreg-reference:
+        description: 'JTReg branch, tag or SHA to check out'
         default: 'master'
         required: true
         type: string
@@ -44,4 +49,17 @@ jobs:
           ref:  ${{ github.event.inputs.test-reference }}
       - name: 'List entries of test/ directory'
         shell: bash
-        run: ls -l test/
+        run: ls -l test
+      - name: 'Check out JTReg repository'
+        uses: actions/checkout@v4
+        with:
+          repository: openjdk/jtreg
+          ref:  ${{ github.event.inputs.jtreg-reference }}
+          path: build/jtreg
+      - name: 'Build JTReg'
+        shell: bash
+        working-directory: build/jtreg
+        run: bash make/build.sh
+      - name: 'Print JTReg version'
+        shell: bash
+        run: java -jar build/jtreg/build/images/jtreg/lib/jtreg.jar -version
