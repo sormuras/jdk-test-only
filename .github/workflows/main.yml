@@ -71,3 +71,11 @@ jobs:
       - name: 'Run JTReg...'
         shell: bash
         run: java -jar build/jtreg/build/images/jtreg/lib/jtreg.jar ${{ github.event.inputs.jtreg-args }}
+      - name: 'Always upload test artifacts'
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: test-artifact
+          path: |
+            JTReport
+            JTWork
