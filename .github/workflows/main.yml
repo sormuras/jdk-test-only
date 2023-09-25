@@ -77,5 +77,5 @@ jobs:
         with:
           name: test-artifact
           path: |
-            JTReport
-            JTWork
+            JTreport
+            JTwork
